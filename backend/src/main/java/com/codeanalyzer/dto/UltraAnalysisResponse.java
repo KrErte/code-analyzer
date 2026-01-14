@@ -16,11 +16,18 @@ public class UltraAnalysisResponse {
     // Core analysis (from enhanced)
     private EnhancedAnalysisResponse coreAnalysis;
 
-    // VIRAL FEATURES
+    // VIRAL FEATURES - TIER 1
     private BugWeather bugWeather;
     private CodeInsurance codeInsurance;
     private IncidentSimulation incidentSimulation;
     private DeveloperDNA developerDNA;
+
+    // VIRAL FEATURES - TIER 2 (ULTRA WILD)
+    private CodeHorrorMovie horrorMovie;
+    private TechDebtStock techDebtStock;
+    private CodeConfessional confessional;
+    private CodeDatingProfile datingProfile;
+    private StartupGraveyard startupGraveyard;
 
     // Shareable cards
     private ShareableCards shareableCards;
