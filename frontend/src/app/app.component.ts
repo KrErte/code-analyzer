@@ -7,31 +7,17 @@ import { AnalysisResultsComponent } from './components/analysis-results/analysis
 import { HistoryPanelComponent } from './components/history-panel/history-panel.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { MultiFileResultsComponent } from './components/multi-file-results/multi-file-results.component';
+import { EnhancedResultsComponent } from './components/enhanced-results/enhanced-results.component';
 import { AnalysisService } from './services/analysis.service';
-import {
-  AnalysisResponse,
-  AnalysisHistory,
-  Persona,
-  Language,
-  FileContent,
-  MultiFileAnalysisResponse
-} from './models/analysis.model';
+import { AnalysisResponse, AnalysisHistory, Persona, Language, FileContent, MultiFileAnalysisResponse } from './models/analysis.model';
+import { EnhancedAnalysisResponse } from './models/enhanced.model';
 
 type AnalysisMode = 'single' | 'multi';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CodeInputComponent,
-    PersonaSelectorComponent,
-    AnalysisResultsComponent,
-    HistoryPanelComponent,
-    FileUploadComponent,
-    MultiFileResultsComponent
-  ],
+  imports: [CommonModule, FormsModule, CodeInputComponent, PersonaSelectorComponent, AnalysisResultsComponent, HistoryPanelComponent, FileUploadComponent, MultiFileResultsComponent, EnhancedResultsComponent],
   template: `
     <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800">
       <!-- Header -->
@@ -42,83 +28,61 @@ type AnalysisMode = 'single' | 'multi';
               <span class="text-2xl">🔍</span>
               <div>
                 <h1 class="text-xl font-bold text-white">AI Code Logic Analyzer</h1>
-                <p class="text-xs text-gray-500">Let a senior dev tear apart your code</p>
+                <p class="text-xs text-gray-500">Production Incident Predictor • Ship-It Score • Achievements</p>
               </div>
             </div>
 
-            <!-- Mode Switcher -->
-            <div class="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
-              <button
-                (click)="switchMode('single')"
-                [class]="mode === 'single' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'"
-                class="px-4 py-2 rounded-md text-sm font-medium transition-all"
-              >
-                📝 Single File
-              </button>
-              <button
-                (click)="switchMode('multi')"
-                [class]="mode === 'multi' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'text-gray-400 hover:text-white'"
-                class="px-4 py-2 rounded-md text-sm font-medium transition-all"
-              >
-                📁 Multi-File
-              </button>
-            </div>
-
-            <div class="text-xs text-gray-600">
-              Powered by Claude AI
+            <div class="flex items-center gap-4">
+              <!-- Mode Switcher -->
+              <div class="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+                <button (click)="switchMode('single')" [class]="mode === 'single' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'text-gray-400 hover:text-white'" class="px-4 py-2 rounded-md text-sm font-medium transition-all">
+                  🚀 Enhanced
+                </button>
+                <button (click)="switchMode('multi')" [class]="mode === 'multi' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' : 'text-gray-400 hover:text-white'" class="px-4 py-2 rounded-md text-sm font-medium transition-all">
+                  📁 Multi-File
+                </button>
+              </div>
+              <div class="text-xs text-gray-600">Powered by Claude AI</div>
             </div>
           </div>
         </div>
       </header>
 
-      <!-- Main Content -->
       <main class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Single File Mode -->
+        <!-- Enhanced Single File Mode -->
         @if (mode === 'single') {
           <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <aside class="lg:col-span-1 order-2 lg:order-1">
-              <app-history-panel
-                [history]="history"
-                (onSelectHistory)="loadFromHistory($event)"
-                (onClearHistory)="clearHistory()"
-                (onDeleteItem)="deleteHistoryItem($event)"
-              />
+              <app-history-panel [history]="history" (onSelectHistory)="loadFromHistory($event)" (onClearHistory)="clearHistory()" (onDeleteItem)="deleteHistoryItem($event)"/>
             </aside>
 
             <div class="lg:col-span-3 order-1 lg:order-2 space-y-6">
-              @if (!analysisResult) {
+              @if (!enhancedResult) {
                 <div class="bg-gray-800/30 rounded-xl border border-gray-700 p-6 space-y-6">
-                  <app-code-input
-                    [languages]="languages"
-                    [code]="code"
-                    [selectedLanguage]="selectedLanguage"
-                    [context]="context"
-                    (codeChange)="code = $event"
-                    (languageChange)="selectedLanguage = $event"
-                    (contextChange)="context = $event"
-                  />
+                  <!-- Feature Banner -->
+                  <div class="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg p-4 border border-blue-500/20">
+                    <div class="flex items-center gap-4">
+                      <div class="text-3xl">🔮</div>
+                      <div>
+                        <h3 class="font-bold text-blue-300">Enhanced Analysis Mode</h3>
+                        <p class="text-sm text-gray-400">Predicts production incidents • Estimates $ cost • Awards achievements</p>
+                      </div>
+                    </div>
+                  </div>
 
-                  <app-persona-selector
-                    [personas]="personas"
-                    [selectedPersona]="selectedPersona"
-                    (personaChange)="selectedPersona = $event"
-                  />
+                  <app-code-input [languages]="languages" [code]="code" [selectedLanguage]="selectedLanguage" [context]="context" (codeChange)="code = $event" (languageChange)="selectedLanguage = $event" (contextChange)="context = $event"/>
+
+                  <app-persona-selector [personas]="personas" [selectedPersona]="selectedPersona" (personaChange)="selectedPersona = $event"/>
 
                   <div class="flex items-center justify-between pt-4 border-t border-gray-700">
-                    <p class="text-xs text-gray-500">
-                      Your code is analyzed in real-time and never stored on our servers.
-                    </p>
-                    <button
-                      (click)="analyze()"
-                      [disabled]="isLoading || !code.trim()"
-                      class="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed
-                             px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2"
-                    >
+                    <div class="flex items-center gap-4">
+                      <p class="text-xs text-gray-500">{{ selectedPersona === 'roast' ? '🔥 Roast Mode: Prepare to be destroyed' : 'Enhanced analysis with incident prediction' }}</p>
+                    </div>
+                    <button (click)="analyzeEnhanced()" [disabled]="isLoading || !code.trim()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:from-gray-700 disabled:to-gray-700 px-8 py-3 rounded-lg font-bold transition-all flex items-center gap-2 text-lg">
                       @if (isLoading) {
-                        <span class="loading-pulse">Analyzing...</span>
+                        <span class="animate-spin">🔮</span><span>Predicting Incidents...</span>
                       } @else {
-                        <span>🔬</span>
-                        <span>Analyze Code</span>
+                        <span>{{ selectedPersona === 'roast' ? '🔥' : '🚀' }}</span><span>{{ selectedPersona === 'roast' ? 'Roast My Code' : 'Analyze & Predict' }}</span>
                       }
                     </button>
                   </div>
@@ -126,17 +90,11 @@ type AnalysisMode = 'single' | 'multi';
 
                 @if (error) {
                   <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-400">
-                    <div class="flex items-center gap-2">
-                      <span>⚠️</span>
-                      <span>{{ error }}</span>
-                    </div>
+                    <span>⚠️ {{ error }}</span>
                   </div>
                 }
               } @else {
-                <app-analysis-results
-                  [result]="analysisResult"
-                  (onNewAnalysis)="resetAnalysis()"
-                />
+                <app-enhanced-results [result]="enhancedResult" (onNewAnalysis)="resetEnhancedAnalysis()"/>
               }
             </div>
           </div>
@@ -147,76 +105,39 @@ type AnalysisMode = 'single' | 'multi';
           <div class="space-y-6">
             @if (!multiFileResult) {
               <div class="bg-gray-800/30 rounded-xl border border-gray-700 p-6 space-y-6">
-                <app-file-upload
-                  (filesChange)="files = $event"
-                  (projectNameChange)="projectName = $event"
-                />
+                <app-file-upload (filesChange)="files = $event" (projectNameChange)="projectName = $event"/>
 
                 @if (files.length > 0) {
                   <div>
-                    <label class="text-sm font-medium text-gray-300 block mb-2">
-                      Context (optional)
-                    </label>
-                    <input
-                      type="text"
-                      [(ngModel)]="multiContext"
-                      placeholder="What should this project do? Any specific concerns?"
-                      class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+                    <label class="text-sm font-medium text-gray-300 block mb-2">Context (optional)</label>
+                    <input type="text" [(ngModel)]="multiContext" placeholder="What should this project do?" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm"/>
                   </div>
 
-                  <app-persona-selector
-                    [personas]="personas"
-                    [selectedPersona]="selectedPersona"
-                    (personaChange)="selectedPersona = $event"
-                  />
+                  <app-persona-selector [personas]="personas" [selectedPersona]="selectedPersona" (personaChange)="selectedPersona = $event"/>
 
                   <div class="flex items-center justify-between pt-4 border-t border-gray-700">
-                    <p class="text-xs text-gray-500">
-                      {{ files.length }} files ready for analysis
-                    </p>
-                    <button
-                      (click)="analyzeMultiple()"
-                      [disabled]="isLoading || files.length === 0"
-                      class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500
-                             disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed
-                             px-8 py-3 rounded-lg font-medium transition-all flex items-center gap-2 text-lg"
-                    >
-                      @if (isLoading) {
-                        <span class="animate-spin">⚙️</span>
-                        <span>Analyzing {{ files.length }} files...</span>
-                      } @else {
-                        <span>🚀</span>
-                        <span>Analyze Project</span>
-                      }
+                    <p class="text-xs text-gray-500">{{ files.length }} files ready</p>
+                    <button (click)="analyzeMultiple()" [disabled]="isLoading" class="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-3 rounded-lg font-bold">
+                      @if (isLoading) { <span class="animate-spin">⚙️</span> } @else { 🚀 } Analyze Project
                     </button>
                   </div>
                 }
               </div>
 
               @if (error) {
-                <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-400">
-                  <div class="flex items-center gap-2">
-                    <span>⚠️</span>
-                    <span>{{ error }}</span>
-                  </div>
-                </div>
+                <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-400">⚠️ {{ error }}</div>
               }
             } @else {
-              <app-multi-file-results
-                [result]="multiFileResult"
-                (onNewAnalysis)="resetMultiAnalysis()"
-              />
+              <app-multi-file-results [result]="multiFileResult" (onNewAnalysis)="resetMultiAnalysis()"/>
             }
           </div>
         }
       </main>
 
-      <!-- Footer -->
       <footer class="border-t border-gray-800 mt-12">
         <div class="max-w-7xl mx-auto px-4 py-6">
           <div class="flex items-center justify-between text-xs text-gray-600">
-            <p>AI Code Logic Analyzer - Find bugs before they find you</p>
+            <p>🔮 Production Incident Predictor • 💰 Cost Analyzer • 🏆 Achievements • 🔥 Roast Mode</p>
             <p>Built with Spring Boot + Angular + Claude AI</p>
           </div>
         </div>
@@ -228,19 +149,19 @@ export class AppComponent implements OnInit {
   private analysisService = inject(AnalysisService);
 
   mode: AnalysisMode = 'single';
-
-  // Single file
   code = '';
   selectedLanguage = 'javascript';
   selectedPersona = 'brutal';
   context = '';
-  analysisResult: AnalysisResponse | null = null;
+
+  // Results
+  enhancedResult: EnhancedAnalysisResponse | null = null;
+  multiFileResult: MultiFileAnalysisResponse | null = null;
 
   // Multi-file
   files: FileContent[] = [];
   projectName = '';
   multiContext = '';
-  multiFileResult: MultiFileAnalysisResponse | null = null;
 
   // Shared
   personas: Persona[] = [];
@@ -253,7 +174,6 @@ export class AppComponent implements OnInit {
     this.loadPersonas();
     this.loadLanguages();
     this.loadHistory();
-    this.checkUrlParams();
   }
 
   switchMode(newMode: AnalysisMode): void {
@@ -266,9 +186,10 @@ export class AppComponent implements OnInit {
       next: (res) => this.personas = res.personas,
       error: () => {
         this.personas = [
-          { id: 'brutal', name: 'Brutal Senior', description: 'Harshly critical, finds every possible flaw.' },
+          { id: 'brutal', name: 'Brutal Senior', description: 'Harshly critical, no mercy.' },
           { id: 'mentor', name: 'Constructive Mentor', description: 'Critical but educational.' },
-          { id: 'edge-hunter', name: 'Edge Case Hunter', description: 'Focuses on boundary conditions.' }
+          { id: 'edge-hunter', name: 'Edge Case Hunter', description: 'Boundary conditions expert.' },
+          { id: 'roast', name: 'Code Roast 🔥', description: 'Savage, meme-worthy roasts.' }
         ];
       }
     });
@@ -292,35 +213,18 @@ export class AppComponent implements OnInit {
     this.analysisService.history$.subscribe(h => this.history = h);
   }
 
-  private checkUrlParams(): void {
-    const params = new URLSearchParams(window.location.search);
-    const analysisId = params.get('analysis');
-    const multiId = params.get('multi');
-
-    if (analysisId) {
-      const item = this.analysisService.getHistoryById(analysisId);
-      if (item) this.loadFromHistory(item);
-    } else if (multiId) {
-      const item = this.analysisService.getMultiHistoryById(multiId);
-      if (item) {
-        this.mode = 'multi';
-        this.multiFileResult = item.response;
-      }
-    }
-  }
-
-  analyze(): void {
+  analyzeEnhanced(): void {
     if (!this.code.trim()) return;
     this.isLoading = true;
     this.error = '';
 
-    this.analysisService.analyze({
+    this.analysisService.analyzeEnhanced({
       code: this.code,
       language: this.selectedLanguage,
       context: this.context,
       persona: this.selectedPersona
     }).subscribe({
-      next: (res) => { this.analysisResult = res; this.isLoading = false; },
+      next: (res) => { this.enhancedResult = res; this.isLoading = false; },
       error: (err) => { this.error = err.error?.message || 'Analysis failed.'; this.isLoading = false; }
     });
   }
@@ -345,17 +249,11 @@ export class AppComponent implements OnInit {
     this.code = item.code;
     this.selectedLanguage = item.language;
     this.selectedPersona = item.persona;
-    this.analysisResult = item.response;
     this.mode = 'single';
   }
 
-  resetAnalysis(): void { this.analysisResult = null; }
-  resetMultiAnalysis(): void {
-    this.multiFileResult = null;
-    this.files = [];
-    this.projectName = '';
-    this.multiContext = '';
-  }
+  resetEnhancedAnalysis(): void { this.enhancedResult = null; }
+  resetMultiAnalysis(): void { this.multiFileResult = null; this.files = []; }
 
   clearHistory(): void {
     if (confirm('Clear all history?')) this.analysisService.clearHistory();

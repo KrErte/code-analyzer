@@ -1,10 +1,8 @@
 package com.codeanalyzer.controller;
 
-import com.codeanalyzer.dto.AnalysisRequest;
-import com.codeanalyzer.dto.AnalysisResponse;
-import com.codeanalyzer.dto.MultiFileAnalysisRequest;
-import com.codeanalyzer.dto.MultiFileAnalysisResponse;
+import com.codeanalyzer.dto.*;
 import com.codeanalyzer.service.ClaudeService;
+import com.codeanalyzer.service.EnhancedAnalysisService;
 import com.codeanalyzer.service.MultiFileAnalysisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +22,7 @@ public class AnalysisController {
 
     private final ClaudeService claudeService;
     private final MultiFileAnalysisService multiFileAnalysisService;
+    private final EnhancedAnalysisService enhancedAnalysisService;
 
     @PostMapping("/analyze")
     public Mono<ResponseEntity<AnalysisResponse>> analyzeCode(@Valid @RequestBody AnalysisRequest request) {
@@ -30,6 +30,18 @@ public class AnalysisController {
                 request.getLanguage(), request.getPersona());
 
         return claudeService.analyzeCode(
+                        request.getCode(),
+                        request.getLanguage(),
+                        request.getContext(),
+                        request.getPersona())
+                .map(ResponseEntity::ok);
+    }
+
+    @PostMapping("/analyze/enhanced")
+    public Mono<ResponseEntity<EnhancedAnalysisResponse>> analyzeEnhanced(@Valid @RequestBody AnalysisRequest request) {
+        log.info("Enhanced analysis for {} code with {} persona", request.getLanguage(), request.getPersona());
+
+        return enhancedAnalysisService.analyzeEnhanced(
                         request.getCode(),
                         request.getLanguage(),
                         request.getContext(),
@@ -50,28 +62,38 @@ public class AnalysisController {
     public ResponseEntity<Map<String, String>> health() {
         return ResponseEntity.ok(Map.of(
                 "status", "healthy",
-                "service", "code-analyzer"
+                "service", "code-analyzer",
+                "version", "2.0-enhanced"
         ));
     }
 
     @GetMapping("/personas")
     public ResponseEntity<Map<String, Object>> getPersonas() {
         return ResponseEntity.ok(Map.of(
-                "personas", java.util.List.of(
+                "personas", List.of(
                         Map.of(
                                 "id", "brutal",
                                 "name", "Brutal Senior",
-                                "description", "Harshly critical, finds every possible flaw. No mercy."
+                                "description", "Harshly critical, finds every possible flaw. No mercy.",
+                                "icon", "🔥"
                         ),
                         Map.of(
                                 "id", "mentor",
                                 "name", "Constructive Mentor",
-                                "description", "Critical but educational. Explains the 'why' behind issues."
+                                "description", "Critical but educational. Explains the 'why' behind issues.",
+                                "icon", "🎓"
                         ),
                         Map.of(
                                 "id", "edge-hunter",
                                 "name", "Edge Case Hunter",
-                                "description", "Focuses specifically on boundary conditions and edge cases."
+                                "description", "Focuses specifically on boundary conditions and edge cases.",
+                                "icon", "🎯"
+                        ),
+                        Map.of(
+                                "id", "roast",
+                                "name", "Code Roast 🔥",
+                                "description", "Savage, meme-worthy roasts. Will hurt. Will be funny. Will teach.",
+                                "icon", "💀"
                         )
                 )
         ));
@@ -80,12 +102,17 @@ public class AnalysisController {
     @GetMapping("/languages")
     public ResponseEntity<Map<String, Object>> getLanguages() {
         return ResponseEntity.ok(Map.of(
-                "languages", java.util.List.of(
+                "languages", List.of(
                         Map.of("id", "java", "name", "Java"),
                         Map.of("id", "javascript", "name", "JavaScript"),
                         Map.of("id", "typescript", "name", "TypeScript"),
                         Map.of("id", "python", "name", "Python")
                 )
         ));
+    }
+
+    @GetMapping("/achievements")
+    public ResponseEntity<List<Achievement>> getAchievements() {
+        return ResponseEntity.ok(Achievement.getAvailableAchievements());
     }
 }

@@ -13,6 +13,7 @@ import {
   MultiFileHistory,
   FileContent
 } from '../models/analysis.model';
+import { EnhancedAnalysisResponse } from '../models/enhanced.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,7 @@ export class AnalysisService {
   private readonly apiUrl = environment.apiUrl;
   private readonly HISTORY_KEY = 'code_analyzer_history';
   private readonly MULTI_HISTORY_KEY = 'code_analyzer_multi_history';
+  private readonly ENHANCED_HISTORY_KEY = 'code_analyzer_enhanced_history';
   private readonly MAX_HISTORY = 20;
 
   private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -33,26 +35,30 @@ export class AnalysisService {
   private multiHistorySubject = new BehaviorSubject<MultiFileHistory[]>(this.loadMultiHistory());
   multiHistory$ = this.multiHistorySubject.asObservable();
 
-  // Single file analysis
+  // Basic analysis
   analyze(request: AnalysisRequest): Observable<AnalysisResponse> {
     this.loadingSubject.next(true);
-
     return this.http.post<AnalysisResponse>(`${this.apiUrl}/analyze`, request).pipe(
       tap({
         next: (response) => {
-          this.saveToHistory({
-            id: response.id,
-            code: request.code,
-            language: request.language,
-            persona: request.persona,
-            response,
-            createdAt: Date.now()
-          });
+          this.saveToHistory({ id: response.id, code: request.code, language: request.language, persona: request.persona, response, createdAt: Date.now() });
           this.loadingSubject.next(false);
         },
-        error: () => {
+        error: () => this.loadingSubject.next(false)
+      })
+    );
+  }
+
+  // Enhanced analysis with incidents, costs, achievements
+  analyzeEnhanced(request: AnalysisRequest): Observable<EnhancedAnalysisResponse> {
+    this.loadingSubject.next(true);
+    return this.http.post<EnhancedAnalysisResponse>(`${this.apiUrl}/analyze/enhanced`, request).pipe(
+      tap({
+        next: (response) => {
+          this.saveEnhancedHistory({ id: response.id, code: request.code, language: request.language, persona: request.persona, response, createdAt: Date.now() });
           this.loadingSubject.next(false);
-        }
+        },
+        error: () => this.loadingSubject.next(false)
       })
     );
   }
@@ -60,23 +66,13 @@ export class AnalysisService {
   // Multi-file analysis
   analyzeMultiple(request: MultiFileAnalysisRequest): Observable<MultiFileAnalysisResponse> {
     this.loadingSubject.next(true);
-
     return this.http.post<MultiFileAnalysisResponse>(`${this.apiUrl}/analyze/multi`, request).pipe(
       tap({
         next: (response) => {
-          this.saveToMultiHistory({
-            id: response.id,
-            files: request.files,
-            persona: request.persona,
-            projectName: request.projectName,
-            response,
-            createdAt: Date.now()
-          });
+          this.saveToMultiHistory({ id: response.id, files: request.files, persona: request.persona, projectName: request.projectName, response, createdAt: Date.now() });
           this.loadingSubject.next(false);
         },
-        error: () => {
-          this.loadingSubject.next(false);
-        }
+        error: () => this.loadingSubject.next(false)
       })
     );
   }
@@ -89,40 +85,40 @@ export class AnalysisService {
     return this.http.get<{ languages: Language[] }>(`${this.apiUrl}/languages`);
   }
 
-  // Single file history
+  // History management
   private loadHistory(): AnalysisHistory[] {
-    try {
-      const stored = localStorage.getItem(this.HISTORY_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem(this.HISTORY_KEY) || '[]'); }
+    catch { return []; }
   }
 
   private saveToHistory(entry: AnalysisHistory): void {
     const history = this.loadHistory();
     history.unshift(entry);
-    const trimmed = history.slice(0, this.MAX_HISTORY);
-    localStorage.setItem(this.HISTORY_KEY, JSON.stringify(trimmed));
-    this.historySubject.next(trimmed);
+    localStorage.setItem(this.HISTORY_KEY, JSON.stringify(history.slice(0, this.MAX_HISTORY)));
+    this.historySubject.next(history.slice(0, this.MAX_HISTORY));
   }
 
-  // Multi-file history
   private loadMultiHistory(): MultiFileHistory[] {
-    try {
-      const stored = localStorage.getItem(this.MULTI_HISTORY_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem(this.MULTI_HISTORY_KEY) || '[]'); }
+    catch { return []; }
   }
 
   private saveToMultiHistory(entry: MultiFileHistory): void {
     const history = this.loadMultiHistory();
     history.unshift(entry);
-    const trimmed = history.slice(0, this.MAX_HISTORY);
-    localStorage.setItem(this.MULTI_HISTORY_KEY, JSON.stringify(trimmed));
-    this.multiHistorySubject.next(trimmed);
+    localStorage.setItem(this.MULTI_HISTORY_KEY, JSON.stringify(history.slice(0, this.MAX_HISTORY)));
+    this.multiHistorySubject.next(history.slice(0, this.MAX_HISTORY));
+  }
+
+  private loadEnhancedHistory(): any[] {
+    try { return JSON.parse(localStorage.getItem(this.ENHANCED_HISTORY_KEY) || '[]'); }
+    catch { return []; }
+  }
+
+  private saveEnhancedHistory(entry: any): void {
+    const history = this.loadEnhancedHistory();
+    history.unshift(entry);
+    localStorage.setItem(this.ENHANCED_HISTORY_KEY, JSON.stringify(history.slice(0, this.MAX_HISTORY)));
   }
 
   getHistoryById(id: string): AnalysisHistory | undefined {
@@ -133,9 +129,14 @@ export class AnalysisService {
     return this.loadMultiHistory().find(h => h.id === id);
   }
 
+  getEnhancedHistoryById(id: string): any | undefined {
+    return this.loadEnhancedHistory().find(h => h.id === id);
+  }
+
   clearHistory(): void {
     localStorage.removeItem(this.HISTORY_KEY);
     localStorage.removeItem(this.MULTI_HISTORY_KEY);
+    localStorage.removeItem(this.ENHANCED_HISTORY_KEY);
     this.historySubject.next([]);
     this.multiHistorySubject.next([]);
   }
@@ -152,18 +153,9 @@ export class AnalysisService {
     this.multiHistorySubject.next(history);
   }
 
-  // Utility: detect language from filename
   detectLanguage(filename: string): string {
     const ext = filename.split('.').pop()?.toLowerCase();
-    const langMap: Record<string, string> = {
-      'java': 'java',
-      'js': 'javascript',
-      'jsx': 'javascript',
-      'ts': 'typescript',
-      'tsx': 'typescript',
-      'py': 'python',
-      'pyw': 'python'
-    };
+    const langMap: Record<string, string> = { java: 'java', js: 'javascript', jsx: 'javascript', ts: 'typescript', tsx: 'typescript', py: 'python', pyw: 'python' };
     return langMap[ext || ''] || 'javascript';
   }
 
