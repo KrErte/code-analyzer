@@ -9,26 +9,55 @@ import { FileUploadComponent } from './components/file-upload/file-upload.compon
 import { MultiFileResultsComponent } from './components/multi-file-results/multi-file-results.component';
 import { EnhancedResultsComponent } from './components/enhanced-results/enhanced-results.component';
 import { DemoPlaygroundComponent } from './components/demo-playground/demo-playground.component';
+import { LandingComponent } from './components/landing/landing.component';
+import { TeamDashboardComponent } from './components/team-dashboard/team-dashboard.component';
 import { AnalysisService } from './services/analysis.service';
 import { AnalysisResponse, AnalysisHistory, Persona, Language, FileContent, MultiFileAnalysisResponse } from './models/analysis.model';
 import { EnhancedAnalysisResponse } from './models/enhanced.model';
 
+type AppView = 'landing' | 'app' | 'dashboard';
 type AnalysisMode = 'single' | 'multi' | 'demo';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, CodeInputComponent, PersonaSelectorComponent, AnalysisResultsComponent, HistoryPanelComponent, FileUploadComponent, MultiFileResultsComponent, EnhancedResultsComponent, DemoPlaygroundComponent],
+  imports: [CommonModule, FormsModule, CodeInputComponent, PersonaSelectorComponent, AnalysisResultsComponent, HistoryPanelComponent, FileUploadComponent, MultiFileResultsComponent, EnhancedResultsComponent, DemoPlaygroundComponent, LandingComponent, TeamDashboardComponent],
   template: `
+    <!-- Landing Page View -->
+    @if (appView === 'landing') {
+      <app-landing />
+    }
+
+    <!-- Dashboard View -->
+    @else if (appView === 'dashboard') {
+      <div class="min-h-screen bg-gray-900">
+        <header class="border-b border-gray-800 bg-gray-900/95 backdrop-blur sticky top-0 z-50">
+          <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" (click)="switchAppView('app')">
+              <span class="text-2xl">🔮</span>
+              <span class="text-xl font-bold">CodeKarma</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <button (click)="switchAppView('app')" class="text-gray-400 hover:text-white transition">Analyzer</button>
+              <button class="bg-blue-600 px-4 py-2 rounded-lg">Team Dashboard</button>
+            </div>
+          </div>
+        </header>
+        <app-team-dashboard />
+      </div>
+    }
+
+    <!-- Main App View -->
+    @else {
     <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800">
       <!-- Header -->
       <header class="border-b border-gray-800 sticky top-0 bg-gray-900/95 backdrop-blur z-50">
         <div class="max-w-7xl mx-auto px-4 py-4">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">🔍</span>
+            <div class="flex items-center gap-3 cursor-pointer" (click)="switchAppView('landing')">
+              <span class="text-2xl">🔮</span>
               <div>
-                <h1 class="text-xl font-bold text-white">AI Code Logic Analyzer</h1>
+                <h1 class="text-xl font-bold text-white">CodeKarma</h1>
                 <p class="text-xs text-gray-500">Production Incident Predictor • Ship-It Score • Achievements</p>
               </div>
             </div>
@@ -46,6 +75,7 @@ type AnalysisMode = 'single' | 'multi' | 'demo';
                   🎮 Playground
                 </button>
               </div>
+              <button (click)="switchAppView('dashboard')" class="text-gray-400 hover:text-white text-sm transition">📊 Dashboard</button>
               <div class="text-xs text-gray-600">Powered by Claude AI</div>
             </div>
           </div>
@@ -152,6 +182,7 @@ type AnalysisMode = 'single' | 'multi' | 'demo';
         </div>
       </footer>
     </div>
+    }
   `
 })
 export class AppComponent implements OnInit {
@@ -179,6 +210,9 @@ export class AppComponent implements OnInit {
   isLoading = false;
   error = '';
 
+  // App view state
+  appView: AppView = 'app'; // 'landing' | 'app' | 'dashboard'
+
   ngOnInit(): void {
     this.loadPersonas();
     this.loadLanguages();
@@ -188,6 +222,10 @@ export class AppComponent implements OnInit {
   switchMode(newMode: AnalysisMode): void {
     this.mode = newMode;
     this.error = '';
+  }
+
+  switchAppView(view: AppView): void {
+    this.appView = view;
   }
 
   private loadPersonas(): void {
