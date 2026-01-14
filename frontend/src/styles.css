@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', Monaco, Consolas, monospace;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Code textarea styling */
+.code-textarea {
+  @apply font-mono bg-gray-800 text-gray-100 border border-gray-700 rounded-lg p-4 w-full resize-none;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+.code-textarea:focus {
+  @apply outline-none ring-2 ring-blue-500 border-transparent;
+}
+
+/* Severity badges */
+.badge-critical {
+  @apply bg-red-500/20 text-red-400 border border-red-500/30;
+}
+
+.badge-warning {
+  @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
+}
+
+.badge-suggestion {
+  @apply bg-blue-500/20 text-blue-400 border border-blue-500/30;
+}
+
+/* Score ring animation */
+@keyframes score-fill {
+  from {
+    stroke-dashoffset: 283;
+  }
+}
+
+.score-ring {
+  animation: score-fill 1s ease-out forwards;
+}
+
+/* Loading animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-pulse {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Persona card hover effects */
+.persona-card {
+  @apply transition-all duration-200 cursor-pointer;
+}
+
+.persona-card:hover {
+  @apply transform scale-[1.02];
+}
+
+.persona-card.selected {
+  @apply ring-2 ring-blue-500;
+}
+
+/* Code block styling */
+pre code {
+  @apply font-mono text-sm;
+}
+
+.line-number {
+  @apply text-gray-500 select-none mr-4 text-right inline-block;
+  min-width: 2rem;
+}
