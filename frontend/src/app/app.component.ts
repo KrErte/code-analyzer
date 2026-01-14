@@ -26,10 +26,8 @@ type AnalysisMode = 'single' | 'multi' | 'demo';
     <!-- Landing Page View -->
     @if (appView === 'landing') {
       <app-landing />
-    }
-
-    <!-- Dashboard View -->
-    @else if (appView === 'dashboard') {
+    } @else if (appView === 'dashboard') {
+      <!-- Dashboard View -->
       <div class="min-h-screen bg-gray-900">
         <header class="border-b border-gray-800 bg-gray-900/95 backdrop-blur sticky top-0 z-50">
           <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -45,11 +43,9 @@ type AnalysisMode = 'single' | 'multi' | 'demo';
         </header>
         <app-team-dashboard />
       </div>
-    }
-
-    <!-- Main App View -->
-    @else {
-    <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800">
+    } @else {
+      <!-- Main App View -->
+      <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800">
       <!-- Header -->
       <header class="border-b border-gray-800 sticky top-0 bg-gray-900/95 backdrop-blur z-50">
         <div class="max-w-7xl mx-auto px-4 py-4">

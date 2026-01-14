@@ -397,11 +397,7 @@ import { FormsModule } from '@angular/forms';
             <span class="w-3 h-3 bg-green-500 rounded-full"></span>
             <span class="ml-4 text-sm text-gray-400">.github/workflows/codekarma.yml</span>
           </div>
-          <pre class="p-6 text-sm overflow-x-auto"><code class="text-gray-300">- name: CodeKarma Analysis
-  uses: codekarma/analyze@v1
-  with:
-    api-key: \${{ secrets.CODEKARMA_KEY }}
-    fail-on: "ARE YOU SERIOUS?"  # Block dangerous PRs</code></pre>
+          <pre class="p-6 text-sm overflow-x-auto"><code class="text-gray-300">{{ githubActionExample }}</code></pre>
         </div>
       </section>
 
@@ -512,6 +508,12 @@ export class LandingComponent {
   roiReviewHours = 8;
   roiIncidents = 4;
   roiSalary = 150000;
+
+  githubActionExample = `- name: CodeKarma Analysis
+  uses: codekarma/analyze@v1
+  with:
+    api-key: \${{ secrets.CODEKARMA_KEY }}
+    fail-on: "ARE YOU SERIOUS?"  # Block dangerous PRs`;
 
   calculateReviewSavings(): number {
     // 50% of review time saved
