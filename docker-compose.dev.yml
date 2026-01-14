@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: code-analyzer-backend-dev
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_COM_CODEANALYZER=DEBUG
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src:/app/src:ro
+    restart: unless-stopped
+    networks:
+      - code-analyzer-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: code-analyzer-frontend-dev
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - code-analyzer-network
+
+networks:
+  code-analyzer-network:
+    driver: bridge

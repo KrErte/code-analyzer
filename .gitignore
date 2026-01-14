@@ -1,9 +1,9 @@
-# Backend
-backend/target/
+# Backend - Gradle
+backend/build/
+backend/.gradle/
 backend/*.jar
 backend/*.war
 backend/*.ear
-backend/.mvn/wrapper/maven-wrapper.jar
 
 # Frontend
 frontend/node_modules/
@@ -31,7 +31,6 @@ Thumbs.db
 # Environment
 .env
 .env.local
-*.env
 
 # Logs
 *.log
