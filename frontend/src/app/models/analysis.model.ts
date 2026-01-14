@@ -42,3 +42,59 @@ export interface AnalysisHistory {
   response: AnalysisResponse;
   createdAt: number;
 }
+
+// Multi-file types
+export interface FileContent {
+  filename: string;
+  path?: string;
+  content: string;
+  language: string;
+}
+
+export interface MultiFileAnalysisRequest {
+  files: FileContent[];
+  context?: string;
+  persona: string;
+  projectName?: string;
+}
+
+export interface FileFinding {
+  filename: string;
+  findings: Finding[];
+  fileScore: number;
+}
+
+export interface CrossFileIssue {
+  issue: string;
+  explanation: string;
+  affectedFiles: string[];
+  suggestion: string;
+}
+
+export interface ArchitectureReview {
+  overview: string;
+  strengths: string[];
+  concerns: string[];
+  recommendations: string[];
+}
+
+export interface MultiFileAnalysisResponse {
+  id: string;
+  overallScore: number;
+  summary: string;
+  fileFindings: FileFinding[];
+  crossFileIssues: CrossFileIssue[];
+  architectureReview: ArchitectureReview;
+  analyzedAt: number;
+  totalFiles: number;
+  totalFindings: number;
+}
+
+export interface MultiFileHistory {
+  id: string;
+  files: FileContent[];
+  persona: string;
+  projectName?: string;
+  response: MultiFileAnalysisResponse;
+  createdAt: number;
+}

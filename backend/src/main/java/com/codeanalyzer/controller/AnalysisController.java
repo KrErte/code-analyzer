@@ -2,7 +2,10 @@ package com.codeanalyzer.controller;
 
 import com.codeanalyzer.dto.AnalysisRequest;
 import com.codeanalyzer.dto.AnalysisResponse;
+import com.codeanalyzer.dto.MultiFileAnalysisRequest;
+import com.codeanalyzer.dto.MultiFileAnalysisResponse;
 import com.codeanalyzer.service.ClaudeService;
+import com.codeanalyzer.service.MultiFileAnalysisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import java.util.Map;
 public class AnalysisController {
 
     private final ClaudeService claudeService;
+    private final MultiFileAnalysisService multiFileAnalysisService;
 
     @PostMapping("/analyze")
     public Mono<ResponseEntity<AnalysisResponse>> analyzeCode(@Valid @RequestBody AnalysisRequest request) {
@@ -30,6 +34,15 @@ public class AnalysisController {
                         request.getLanguage(),
                         request.getContext(),
                         request.getPersona())
+                .map(ResponseEntity::ok);
+    }
+
+    @PostMapping("/analyze/multi")
+    public Mono<ResponseEntity<MultiFileAnalysisResponse>> analyzeMultipleFiles(
+            @Valid @RequestBody MultiFileAnalysisRequest request) {
+        log.info("Received multi-file analysis request for {} files", request.getFiles().size());
+
+        return multiFileAnalysisService.analyzeMultipleFiles(request)
                 .map(ResponseEntity::ok);
     }
 
