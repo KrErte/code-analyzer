@@ -13,7 +13,7 @@ import {
   MultiFileHistory,
   FileContent
 } from '../models/analysis.model';
-import { EnhancedAnalysisResponse } from '../models/enhanced.model';
+import { EnhancedAnalysisResponse, MockScenario, FamousBug } from '../models/enhanced.model';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +83,22 @@ export class AnalysisService {
 
   getLanguages(): Observable<{ languages: Language[] }> {
     return this.http.get<{ languages: Language[] }>(`${this.apiUrl}/languages`);
+  }
+
+  getMockScenarios(): Observable<MockScenario[]> {
+    return this.http.get<MockScenario[]>(`${this.apiUrl}/mock-scenarios`);
+  }
+
+  getMockScenario(id: string): Observable<MockScenario> {
+    return this.http.get<MockScenario>(`${this.apiUrl}/mock-scenarios/${id}`);
+  }
+
+  getFamousBugs(): Observable<FamousBug[]> {
+    return this.http.get<FamousBug[]>(`${this.apiUrl}/famous-bugs`);
+  }
+
+  getFamousBug(id: string): Observable<FamousBug> {
+    return this.http.get<FamousBug>(`${this.apiUrl}/famous-bugs/${id}`);
   }
 
   // History management

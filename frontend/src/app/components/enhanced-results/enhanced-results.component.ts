@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EnhancedAnalysisResponse, ProductionIncident, Achievement } from '../../models/enhanced.model';
+import { EnhancedAnalysisResponse, ProductionIncident, Achievement, FamousBugMatch, PreMortem, OnCallForecast, CodeKarma } from '../../models/enhanced.model';
 
 @Component({
   selector: 'app-enhanced-results',
@@ -234,6 +234,392 @@ import { EnhancedAnalysisResponse, ProductionIncident, Achievement } from '../..
           </div>
         }
 
+        <!-- FAMOUS BUG MATCHES -->
+        @if (result.famousBugMatches && result.famousBugMatches.length > 0) {
+          <div class="bg-pink-900/10 rounded-xl border border-pink-500/30 overflow-hidden">
+            <div class="px-4 py-3 bg-pink-500/10 border-b border-pink-500/30">
+              <h3 class="text-lg font-bold flex items-center gap-2">
+                <span>💀</span> Your Code Matches Famous Disasters
+                <span class="text-xs bg-pink-500/30 px-2 py-1 rounded">PATTERN MATCH</span>
+              </h3>
+            </div>
+            <div class="divide-y divide-pink-500/20">
+              @for (match of result.famousBugMatches; track match.famousBugId) {
+                <div class="p-4">
+                  <div class="flex items-start gap-4">
+                    <div class="text-3xl">{{ match.icon }}</div>
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-2">
+                        <span class="font-bold text-lg text-pink-300">{{ match.bugName }}</span>
+                        <span class="text-xs bg-pink-500/30 px-2 py-1 rounded">{{ match.company }} {{ match.year }}</span>
+                        <span class="text-xs bg-red-500 px-2 py-1 rounded font-bold">{{ match.similarityPercent }}% Similar</span>
+                      </div>
+                      <p class="text-sm text-gray-300 mb-2">{{ match.matchReason }}</p>
+                      <div class="grid md:grid-cols-2 gap-4 mb-3">
+                        <div class="bg-black/30 rounded-lg p-3">
+                          <p class="text-xs text-gray-500 uppercase mb-1">Your Code Pattern</p>
+                          <pre class="text-xs text-yellow-300 whitespace-pre-wrap">{{ match.yourCodePattern }}</pre>
+                        </div>
+                        <div class="bg-black/30 rounded-lg p-3">
+                          <p class="text-xs text-gray-500 uppercase mb-1">Historical Impact</p>
+                          <p class="text-sm text-red-400 font-bold">{{ match.financialImpact }}</p>
+                          <p class="text-xs text-gray-400 mt-1">{{ match.historyPattern }}</p>
+                        </div>
+                      </div>
+                      <div class="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-3">
+                        <p class="text-sm text-yellow-300"><strong>Lesson from history:</strong> {{ match.lesson }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- PRE-MORTEM -->
+        @if (result.preMortem) {
+          <div class="bg-gray-900/50 rounded-xl border border-gray-600 overflow-hidden">
+            <div class="px-4 py-3 bg-gray-800 border-b border-gray-600">
+              <h3 class="text-lg font-bold flex items-center gap-2">
+                <span>📋</span> Pre-Mortem: The Postmortem Before It Happens
+                <span class="text-xs bg-gray-600 px-2 py-1 rounded">CRYSTAL BALL</span>
+              </h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <!-- Header -->
+              <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <h4 class="text-xl font-bold text-red-400">{{ result.preMortem.incidentTitle }}</h4>
+                  <span class="text-sm bg-red-500 px-3 py-1 rounded font-bold">{{ result.preMortem.severity }}</span>
+                </div>
+                <div class="flex items-center gap-4 text-sm text-gray-400">
+                  <span>📅 {{ result.preMortem.date }}</span>
+                  <span>⏰ {{ result.preMortem.timeOfIncident }}</span>
+                  <span>⏱️ Duration: {{ result.preMortem.duration }}</span>
+                </div>
+              </div>
+
+              <!-- Executive Summary -->
+              <div>
+                <h5 class="font-medium text-gray-300 mb-2">Executive Summary</h5>
+                <p class="text-sm text-gray-400">{{ result.preMortem.executiveSummary }}</p>
+              </div>
+
+              <!-- Timeline -->
+              <div class="bg-black/30 rounded-lg p-4">
+                <h5 class="font-medium text-gray-300 mb-2">Incident Timeline</h5>
+                <pre class="text-xs text-gray-400 whitespace-pre-wrap font-mono">{{ result.preMortem.timeline }}</pre>
+              </div>
+
+              <!-- Root Causes & Impact -->
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h5 class="font-medium text-red-400 mb-2">Root Causes</h5>
+                  <ul class="space-y-1">
+                    @for (cause of result.preMortem.rootCauses; track cause) {
+                      <li class="text-sm text-gray-300 flex items-start gap-2">
+                        <span class="text-red-500">•</span> {{ cause }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+                <div>
+                  <h5 class="font-medium text-amber-400 mb-2">Contributing Factors</h5>
+                  <ul class="space-y-1">
+                    @for (factor of result.preMortem.contributingFactors; track factor) {
+                      <li class="text-sm text-gray-300 flex items-start gap-2">
+                        <span class="text-amber-500">•</span> {{ factor }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Impact & Blame -->
+              <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-red-900/10 rounded-lg p-4">
+                  <h5 class="font-medium text-red-300 mb-2">Impact Assessment</h5>
+                  <p class="text-sm text-gray-300">{{ result.preMortem.impactAssessment }}</p>
+                </div>
+                <div class="bg-purple-900/10 rounded-lg p-4">
+                  <h5 class="font-medium text-purple-300 mb-2">Who Gets Blamed?</h5>
+                  <p class="text-sm text-gray-300">{{ result.preMortem.whoGetsBlamed }}</p>
+                  <p class="text-xs text-gray-500 mt-2">
+                    Slack: {{ result.preMortem.slackChannelName }} • {{ result.preMortem.numberOfPagesGenerated }} pages generated
+                  </p>
+                </div>
+              </div>
+
+              <!-- Customer Communication (Preview) -->
+              <details class="bg-gray-800/50 rounded-lg">
+                <summary class="px-4 py-2 cursor-pointer text-sm text-gray-400">
+                  📧 Draft Customer Communication (Apology Email Preview)
+                </summary>
+                <div class="p-4 border-t border-gray-700">
+                  <pre class="text-xs text-gray-400 whitespace-pre-wrap">{{ result.preMortem.customerCommunication }}</pre>
+                </div>
+              </details>
+
+              <!-- Action Items -->
+              <div>
+                <h5 class="font-medium text-emerald-400 mb-2">Action Items (Fix Before This Happens)</h5>
+                <ul class="space-y-1">
+                  @for (action of result.preMortem.actionItems; track action) {
+                    <li class="text-sm text-gray-300 flex items-start gap-2">
+                      <span class="text-emerald-500">□</span> {{ action }}
+                    </li>
+                  }
+                </ul>
+              </div>
+
+              <!-- Lessons -->
+              <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                <h5 class="font-medium text-blue-300 mb-2">Lessons You'll Learn (The Hard Way)</h5>
+                <p class="text-sm text-gray-300">{{ result.preMortem.lessonsLearned }}</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ON-CALL FORECAST -->
+        @if (result.onCallForecast) {
+          <div class="bg-indigo-900/10 rounded-xl border border-indigo-500/30 overflow-hidden">
+            <div class="px-4 py-3 bg-indigo-500/10 border-b border-indigo-500/30">
+              <h3 class="text-lg font-bold flex items-center gap-2">
+                <span>📟</span> On-Call Forecast (Next 30 Days)
+                <span class="text-xs px-2 py-1 rounded font-bold"
+                      [class]="getOnCallVerdictClass(result.onCallForecast.overallVerdict)">
+                  {{ result.onCallForecast.overallVerdict }}
+                </span>
+              </h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <!-- Pain Meter -->
+              <div class="bg-black/30 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm text-gray-400">Pain Index</span>
+                  <span class="font-bold" [class]="getPainColor(result.onCallForecast.painIndex)">
+                    {{ result.onCallForecast.painIndex }}/100
+                  </span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-3">
+                  <div class="h-3 rounded-full transition-all"
+                       [class]="getPainBarColor(result.onCallForecast.painIndex)"
+                       [style.width.%]="result.onCallForecast.painIndex">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stats -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-black/30 rounded-lg p-3 text-center">
+                  <div class="text-2xl font-bold text-red-400">{{ result.onCallForecast.predictedPages }}</div>
+                  <div class="text-xs text-gray-400">Total Pages</div>
+                </div>
+                <div class="bg-black/30 rounded-lg p-3 text-center">
+                  <div class="text-2xl font-bold text-purple-400">{{ result.onCallForecast.sleepInterruptions }}</div>
+                  <div class="text-xs text-gray-400">Sleep Interruptions</div>
+                </div>
+                <div class="bg-black/30 rounded-lg p-3 text-center">
+                  <div class="text-2xl font-bold text-amber-400">{{ result.onCallForecast.weekendRuined }}</div>
+                  <div class="text-xs text-gray-400">Weekends Ruined</div>
+                </div>
+                <div class="bg-black/30 rounded-lg p-3 text-center">
+                  <div class="text-2xl font-bold text-blue-400">{{ result.onCallForecast.coffeeCupsNeeded }}</div>
+                  <div class="text-xs text-gray-400">☕ Coffees Needed</div>
+                </div>
+              </div>
+
+              <!-- Fun Stats -->
+              <div class="grid md:grid-cols-3 gap-4 text-center">
+                <div class="bg-gray-800/50 rounded-lg p-3">
+                  <span class="text-2xl">👴</span>
+                  <p class="text-sm text-gray-300">+{{ result.onCallForecast.grayHairsGained }} Gray Hairs</p>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-3">
+                  <span class="text-2xl">💔</span>
+                  <p class="text-sm text-gray-300">Relationship Strain: {{ result.onCallForecast.relationshipStrainIndex }}/10</p>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-3">
+                  <span class="text-2xl">🧘</span>
+                  <p class="text-sm text-gray-300">Recommended: {{ result.onCallForecast.recommendedCopingMechanism }}</p>
+                </div>
+              </div>
+
+              <!-- Timeline -->
+              @if (result.onCallForecast.timeline && result.onCallForecast.timeline.length > 0) {
+                <div>
+                  <h5 class="font-medium text-gray-300 mb-3">Predicted Incident Timeline</h5>
+                  <div class="space-y-2">
+                    @for (event of result.onCallForecast.timeline; track event.day) {
+                      <div class="flex items-center gap-4 bg-black/30 rounded-lg p-3">
+                        <div class="text-center min-w-[60px]">
+                          <div class="text-xs text-gray-500">{{ event.day }}</div>
+                          <div class="text-sm font-bold text-indigo-400">{{ event.time }}</div>
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center gap-2">
+                            <span [class]="getSeverityClass(event.severity)" class="text-xs px-2 py-0.5 rounded">{{ event.severity }}</span>
+                            <span class="text-sm text-gray-300">{{ event.event }}</span>
+                          </div>
+                          <p class="text-xs text-gray-500 mt-1">{{ event.whatYoullBeDoing }} • Mood: {{ event.mood }}</p>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Scenarios -->
+              <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-red-900/10 rounded-lg p-4">
+                  <h5 class="font-medium text-red-300 mb-2">😱 Worst Case</h5>
+                  <p class="text-sm text-gray-300">{{ result.onCallForecast.worstCaseScenario }}</p>
+                </div>
+                <div class="bg-emerald-900/10 rounded-lg p-4">
+                  <h5 class="font-medium text-emerald-300 mb-2">😌 Best Case</h5>
+                  <p class="text-sm text-gray-300">{{ result.onCallForecast.bestCaseScenario }}</p>
+                </div>
+              </div>
+
+              <!-- Survival Tips -->
+              @if (result.onCallForecast.survivalTips && result.onCallForecast.survivalTips.length > 0) {
+                <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                  <h5 class="font-medium text-blue-300 mb-2">🛡️ Survival Tips</h5>
+                  <ul class="space-y-1">
+                    @for (tip of result.onCallForecast.survivalTips; track tip) {
+                      <li class="text-sm text-gray-300 flex items-start gap-2">
+                        <span class="text-blue-400">→</span> {{ tip }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- CODE KARMA -->
+        @if (result.codeKarma) {
+          <div class="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-xl border border-purple-500/30 overflow-hidden">
+            <div class="px-4 py-3 bg-purple-500/10 border-b border-purple-500/30">
+              <h3 class="text-lg font-bold flex items-center gap-2">
+                <span>☯️</span> Code Karma
+                <span class="text-xs px-2 py-1 rounded font-bold"
+                      [class]="getKarmaVerdictClass(result.codeKarma.karmaScore)">
+                  {{ result.codeKarma.karmaVerdict }}
+                </span>
+              </h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <!-- Karma Score -->
+              <div class="flex items-center justify-center">
+                <div class="relative w-32 h-32">
+                  <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="none" class="text-gray-700"/>
+                    <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" fill="none"
+                      [class]="result.codeKarma.karmaScore >= 0 ? 'text-emerald-500' : 'text-red-500'"
+                      stroke-linecap="round"
+                      [style.stroke-dasharray]="251"
+                      [style.stroke-dashoffset]="251 - (251 * Math.abs(result.codeKarma.karmaScore) / 100)"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-3xl font-bold" [class]="result.codeKarma.karmaScore >= 0 ? 'text-emerald-400' : 'text-red-400'">
+                      {{ result.codeKarma.karmaScore > 0 ? '+' : '' }}{{ result.codeKarma.karmaScore }}
+                    </span>
+                    <span class="text-xs text-gray-500">Karma</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Debt Created vs Inherited -->
+              <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-red-900/10 rounded-lg p-4">
+                  <h5 class="font-medium text-red-400 mb-3 flex items-center gap-2">
+                    <span>📤</span> Tech Debt You're Creating
+                  </h5>
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-400">Hours of future pain:</span>
+                      <span class="font-bold text-red-300">{{ result.codeKarma.debtCreated?.totalHours }}h</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-400">Maintainer curses:</span>
+                      <span class="font-bold text-red-300">{{ result.codeKarma.debtCreated?.maintainerCurses }}</span>
+                    </div>
+                    @if (result.codeKarma.debtCreated?.worstOffense) {
+                      <div class="mt-2 p-2 bg-red-900/20 rounded text-xs text-red-300">
+                        <strong>Worst offense:</strong> {{ result.codeKarma.debtCreated.worstOffense }}
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="bg-blue-900/10 rounded-lg p-4">
+                  <h5 class="font-medium text-blue-400 mb-3 flex items-center gap-2">
+                    <span>📥</span> Tech Debt You Inherited
+                  </h5>
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-400">Hours of existing pain:</span>
+                      <span class="font-bold text-blue-300">{{ result.codeKarma.debtInherited?.totalHours }}h</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-400">Original sinner:</span>
+                      <span class="font-bold text-blue-300">{{ result.codeKarma.debtInherited?.originalSinner || 'Unknown' }}</span>
+                    </div>
+                    @if (result.codeKarma.debtInherited?.yearOfSin) {
+                      <div class="text-xs text-gray-500">Since: {{ result.codeKarma.debtInherited.yearOfSin }}</div>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Karma Ledger -->
+              @if (result.codeKarma.karmaLedger && result.codeKarma.karmaLedger.length > 0) {
+                <div>
+                  <h5 class="font-medium text-gray-300 mb-2">Karma Ledger</h5>
+                  <div class="space-y-1">
+                    @for (event of result.codeKarma.karmaLedger; track event.action) {
+                      <div class="flex items-center justify-between bg-black/30 rounded p-2 text-sm">
+                        <span class="text-gray-300">{{ event.action }}</span>
+                        <span [class]="event.karmaPoints >= 0 ? 'text-emerald-400' : 'text-red-400'" class="font-bold">
+                          {{ event.karmaPoints > 0 ? '+' : '' }}{{ event.karmaPoints }}
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Future Predictions -->
+              <div class="space-y-3">
+                <div class="bg-purple-900/20 rounded-lg p-4">
+                  <h5 class="font-medium text-purple-300 mb-2">🔮 Future You Says:</h5>
+                  <p class="text-sm text-gray-300 italic">"{{ result.codeKarma.futureYouMessage }}"</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div class="bg-black/30 rounded-lg p-3">
+                    <h6 class="text-xs text-gray-500 mb-1">6 Months From Now</h6>
+                    <p class="text-sm text-gray-300">{{ result.codeKarma.sixMonthsFromNow }}</p>
+                  </div>
+                  <div class="bg-black/30 rounded-lg p-3">
+                    <h6 class="text-xs text-gray-500 mb-1">1 Year From Now</h6>
+                    <p class="text-sm text-gray-300">{{ result.codeKarma.oneYearFromNow }}</p>
+                  </div>
+                </div>
+
+                <div class="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4 text-center">
+                  <p class="text-sm text-amber-300">
+                    <span class="text-lg">🔄</span> Reincarnation prediction: <strong>{{ result.codeKarma.reincarnationAs }}</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
         <!-- MUST FIX -->
         @if (result.shipItScore.mustFixBefore.length > 0) {
           <div class="bg-red-900/10 rounded-xl border border-red-500/30 p-6">
@@ -405,4 +791,39 @@ export class EnhancedResultsComponent {
       alert('Share URL copied!');
     }
   }
+
+  // On-Call Forecast helpers
+  getOnCallVerdictClass(verdict: string): string {
+    const classes: Record<string, string> = {
+      'Peaceful': 'bg-emerald-500',
+      'Rough': 'bg-amber-500',
+      'Nightmare': 'bg-orange-500',
+      'Career-Ending': 'bg-red-500'
+    };
+    return classes[verdict] || 'bg-gray-500';
+  }
+
+  getPainColor(pain: number): string {
+    if (pain <= 25) return 'text-emerald-400';
+    if (pain <= 50) return 'text-amber-400';
+    if (pain <= 75) return 'text-orange-400';
+    return 'text-red-400';
+  }
+
+  getPainBarColor(pain: number): string {
+    if (pain <= 25) return 'bg-emerald-500';
+    if (pain <= 50) return 'bg-amber-500';
+    if (pain <= 75) return 'bg-orange-500';
+    return 'bg-red-500';
+  }
+
+  // Code Karma helpers
+  getKarmaVerdictClass(score: number): string {
+    if (score >= 50) return 'bg-emerald-500';
+    if (score >= 0) return 'bg-blue-500';
+    if (score >= -50) return 'bg-amber-500';
+    return 'bg-red-500';
+  }
+
+  Math = Math; // Expose Math for template
 }

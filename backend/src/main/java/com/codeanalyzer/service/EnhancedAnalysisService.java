@@ -25,6 +25,7 @@ public class EnhancedAnalysisService {
 
     private static final String ENHANCED_SYSTEM_PROMPT = """
         You are a PRODUCTION INCIDENT PSYCHIC - a senior engineer who has seen every possible way code can fail in production.
+        You've been through the wars. You've seen Knight Capital lose $440M in 45 minutes. You've seen Cloudflare go down from a regex.
 
         Your job is to:
         1. Find bugs and issues (standard code review)
@@ -35,6 +36,10 @@ public class EnhancedAnalysisService {
         3. Estimate REAL DOLLAR COSTS of each issue
         4. Give a clear SHIP-IT or NO-SHIP verdict
         5. Award ACHIEVEMENTS based on code quality
+        6. MATCH code patterns to FAMOUS HISTORICAL BUGS (Knight Capital, Cloudflare, Therac-25, etc.)
+        7. Write a PRE-MORTEM - the postmortem BEFORE the incident happens
+        8. Generate an ON-CALL FORECAST - predict what on-call will be like with this code
+        9. Calculate CODE KARMA - technical debt created vs inherited
 
         Be brutally specific. Real production war stories. Real costs.
 
@@ -105,7 +110,93 @@ public class EnhancedAnalysisService {
                     "unlocked": <true|false>,
                     "unlockedReason": "<why earned or why not>"
                 }
-            ]
+            ],
+            "famousBugMatches": [
+                {
+                    "famousBugId": "<id like 'knight-capital' or 'cloudflare-regex'>",
+                    "bugName": "<Famous Bug Name>",
+                    "company": "<Company>",
+                    "year": "<Year>",
+                    "icon": "<emoji>",
+                    "similarityPercent": <0-100>,
+                    "matchReason": "<why this code is similar>",
+                    "financialImpact": "<$X lost in original incident>",
+                    "yourCodePattern": "<snippet from submitted code showing the pattern>",
+                    "historyPattern": "<brief description of what happened historically>",
+                    "lesson": "<key lesson from history>"
+                }
+            ],
+            "preMortem": {
+                "incidentTitle": "<catchy name like 'The Black Friday Meltdown'>",
+                "severity": "<P0|P1|P2>",
+                "date": "<fictional future date like 'March 15, 2025 - The Ides of March'>",
+                "timeOfIncident": "<2:47 AM>",
+                "duration": "<4 hours 23 minutes>",
+                "executiveSummary": "<2 paragraph executive summary of what happened>",
+                "timeline": "<detailed timeline: 2:47 AM - First alert fires...>",
+                "rootCauses": ["<root cause 1>", "<root cause 2>"],
+                "contributingFactors": ["<factor 1>", "<factor 2>"],
+                "impactAssessment": "<X users affected, $Y revenue lost>",
+                "customerCommunication": "<draft of the apology email>",
+                "actionItems": ["<action 1>", "<action 2>"],
+                "lessonsLearned": "<what the team learned>",
+                "whoGetsBlamed": "<Junior dev? Tech lead? AWS?>",
+                "slackChannelName": "<#incident-your-code-broke-prod>",
+                "numberOfPagesGenerated": <number>,
+                "postmortemMeetingDuration": "<2.5 hours>"
+            },
+            "onCallForecast": {
+                "painIndex": <0-100>,
+                "overallVerdict": "<Peaceful|Rough|Nightmare|Career-Ending>",
+                "predictedPages": <number for next 30 days>,
+                "sleepInterruptions": <middle of night alerts>,
+                "weekendRuined": <weekend pages>,
+                "timeline": [
+                    {
+                        "day": "<Day 3>",
+                        "time": "<3:47 AM>",
+                        "event": "<NullPointerException storm from line 42>",
+                        "severity": "<P0|P1|P2>",
+                        "mood": "<Panicked|Annoyed|Resigned|Caffeinated>",
+                        "whatYoullBeDoing": "<Explaining to VP why everything is on fire>"
+                    }
+                ],
+                "survivalTips": ["<tip 1>", "<tip 2>"],
+                "worstCaseScenario": "<description>",
+                "bestCaseScenario": "<description>",
+                "coffeeCupsNeeded": <number>,
+                "grayHairsGained": <number>,
+                "relationshipStrainIndex": <0.0-10.0>,
+                "recommendedCopingMechanism": "<meditation|alcohol|job-search>"
+            },
+            "codeKarma": {
+                "karmaScore": <-100 to +100>,
+                "karmaVerdict": "<Code Saint|Neutral|Tech Debt Terrorist>",
+                "debtCreated": {
+                    "totalHours": <hours of debt you're creating>,
+                    "maintainerCurses": <times future devs will curse you>,
+                    "debtItems": ["<specific debt 1>", "<specific debt 2>"],
+                    "worstOffense": "<your biggest karmic sin>"
+                },
+                "debtInherited": {
+                    "totalHours": <hours of debt you inherited>,
+                    "originalSinner": "<who created this mess>",
+                    "yearOfSin": "<when the original sin was committed>",
+                    "inheritedProblems": ["<problem 1>", "<problem 2>"]
+                },
+                "karmaLedger": [
+                    {
+                        "action": "<Added null check|Skipped tests>",
+                        "karmaPoints": <+5 or -10>,
+                        "consequence": "<what this causes in future>"
+                    }
+                ],
+                "nextLifePrediction": "<In your next code review...>",
+                "reincarnationAs": "<You will be reincarnated as a COBOL maintainer>",
+                "sixMonthsFromNow": "<What this code looks like in 6 months>",
+                "oneYearFromNow": "<What this code looks like in 1 year>",
+                "futureYouMessage": "<Message from future you about this code>"
+            }
             %s
         }
         """;
@@ -295,6 +386,121 @@ public class EnhancedAnalysisService {
                     .build();
         }
 
+        // Parse famous bug matches
+        List<EnhancedAnalysisResponse.FamousBugMatch> famousBugMatches = new ArrayList<>();
+        for (JsonNode fb : node.path("famousBugMatches")) {
+            famousBugMatches.add(EnhancedAnalysisResponse.FamousBugMatch.builder()
+                    .famousBugId(fb.path("famousBugId").asText())
+                    .bugName(fb.path("bugName").asText())
+                    .company(fb.path("company").asText())
+                    .year(fb.path("year").asText())
+                    .icon(fb.path("icon").asText())
+                    .similarityPercent(fb.path("similarityPercent").asInt())
+                    .matchReason(fb.path("matchReason").asText())
+                    .financialImpact(fb.path("financialImpact").asText())
+                    .yourCodePattern(fb.path("yourCodePattern").asText())
+                    .historyPattern(fb.path("historyPattern").asText())
+                    .lesson(fb.path("lesson").asText())
+                    .build());
+        }
+
+        // Parse pre-mortem
+        PreMortem preMortem = null;
+        if (node.has("preMortem")) {
+            JsonNode pm = node.path("preMortem");
+            preMortem = PreMortem.builder()
+                    .incidentTitle(pm.path("incidentTitle").asText())
+                    .severity(pm.path("severity").asText())
+                    .date(pm.path("date").asText())
+                    .timeOfIncident(pm.path("timeOfIncident").asText())
+                    .duration(pm.path("duration").asText())
+                    .executiveSummary(pm.path("executiveSummary").asText())
+                    .timeline(pm.path("timeline").asText())
+                    .rootCauses(parseStringList(pm.path("rootCauses")))
+                    .contributingFactors(parseStringList(pm.path("contributingFactors")))
+                    .impactAssessment(pm.path("impactAssessment").asText())
+                    .customerCommunication(pm.path("customerCommunication").asText())
+                    .actionItems(parseStringList(pm.path("actionItems")))
+                    .lessonsLearned(pm.path("lessonsLearned").asText())
+                    .whoGetsBlamed(pm.path("whoGetsBlamed").asText())
+                    .slackChannelName(pm.path("slackChannelName").asText())
+                    .numberOfPagesGenerated(pm.path("numberOfPagesGenerated").asInt())
+                    .postmortemMeetingDuration(pm.path("postmortemMeetingDuration").asText())
+                    .build();
+        }
+
+        // Parse on-call forecast
+        OnCallForecast onCallForecast = null;
+        if (node.has("onCallForecast")) {
+            JsonNode ocf = node.path("onCallForecast");
+            List<OnCallForecast.OnCallEvent> events = new ArrayList<>();
+            for (JsonNode e : ocf.path("timeline")) {
+                events.add(OnCallForecast.OnCallEvent.builder()
+                        .day(e.path("day").asText())
+                        .time(e.path("time").asText())
+                        .event(e.path("event").asText())
+                        .severity(e.path("severity").asText())
+                        .mood(e.path("mood").asText())
+                        .whatYoullBeDoing(e.path("whatYoullBeDoing").asText())
+                        .build());
+            }
+            onCallForecast = OnCallForecast.builder()
+                    .painIndex(ocf.path("painIndex").asInt())
+                    .overallVerdict(ocf.path("overallVerdict").asText())
+                    .predictedPages(ocf.path("predictedPages").asInt())
+                    .sleepInterruptions(ocf.path("sleepInterruptions").asInt())
+                    .weekendRuined(ocf.path("weekendRuined").asInt())
+                    .timeline(events)
+                    .survivalTips(parseStringList(ocf.path("survivalTips")))
+                    .worstCaseScenario(ocf.path("worstCaseScenario").asText())
+                    .bestCaseScenario(ocf.path("bestCaseScenario").asText())
+                    .coffeeCupsNeeded(ocf.path("coffeeCupsNeeded").asInt())
+                    .grayHairsGained(ocf.path("grayHairsGained").asInt())
+                    .relationshipStrainIndex(ocf.path("relationshipStrainIndex").asDouble())
+                    .recommendedCopingMechanism(ocf.path("recommendedCopingMechanism").asText())
+                    .build();
+        }
+
+        // Parse code karma
+        CodeKarma codeKarma = null;
+        if (node.has("codeKarma")) {
+            JsonNode ck = node.path("codeKarma");
+            JsonNode dc = ck.path("debtCreated");
+            JsonNode di = ck.path("debtInherited");
+
+            List<CodeKarma.KarmaEvent> ledger = new ArrayList<>();
+            for (JsonNode ke : ck.path("karmaLedger")) {
+                ledger.add(CodeKarma.KarmaEvent.builder()
+                        .action(ke.path("action").asText())
+                        .karmaPoints(ke.path("karmaPoints").asInt())
+                        .consequence(ke.path("consequence").asText())
+                        .build());
+            }
+
+            codeKarma = CodeKarma.builder()
+                    .karmaScore(ck.path("karmaScore").asInt())
+                    .karmaVerdict(ck.path("karmaVerdict").asText())
+                    .debtCreated(CodeKarma.TechDebtCreated.builder()
+                            .totalHours(dc.path("totalHours").asInt())
+                            .maintainerCurses(dc.path("maintainerCurses").asInt())
+                            .debtItems(parseStringList(dc.path("debtItems")))
+                            .worstOffense(dc.path("worstOffense").asText())
+                            .build())
+                    .debtInherited(CodeKarma.TechDebtInherited.builder()
+                            .totalHours(di.path("totalHours").asInt())
+                            .originalSinner(di.path("originalSinner").asText())
+                            .yearOfSin(di.path("yearOfSin").asText())
+                            .inheritedProblems(parseStringList(di.path("inheritedProblems")))
+                            .build())
+                    .karmaLedger(ledger)
+                    .nextLifePrediction(ck.path("nextLifePrediction").asText())
+                    .reincarnationAs(ck.path("reincarnationAs").asText())
+                    .sixMonthsFromNow(ck.path("sixMonthsFromNow").asText())
+                    .oneYearFromNow(ck.path("oneYearFromNow").asText())
+                    .futureYouMessage(ck.path("futureYouMessage").asText())
+                    .build();
+        }
+
         // Generate incident timeline
         String timeline = generateIncidentTimeline(incidents);
 
@@ -311,6 +517,10 @@ public class EnhancedAnalysisService {
                 .costAnalysis(costAnalysis)
                 .achievements(achievements)
                 .roast(roast)
+                .famousBugMatches(famousBugMatches)
+                .preMortem(preMortem)
+                .onCallForecast(onCallForecast)
+                .codeKarma(codeKarma)
                 .build();
     }
 

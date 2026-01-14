@@ -65,6 +65,134 @@ export interface CodeRoast {
   constructiveTakeaway: string;
 }
 
+// NEW: Famous Bug Pattern Matching
+export interface FamousBugMatch {
+  famousBugId: string;
+  bugName: string;
+  company: string;
+  year: string;
+  icon: string;
+  similarityPercent: number;
+  matchReason: string;
+  financialImpact: string;
+  yourCodePattern: string;
+  historyPattern: string;
+  lesson: string;
+}
+
+// NEW: Pre-Mortem (postmortem before incident)
+export interface PreMortem {
+  incidentTitle: string;
+  severity: string;
+  date: string;
+  timeOfIncident: string;
+  duration: string;
+  executiveSummary: string;
+  timeline: string;
+  rootCauses: string[];
+  contributingFactors: string[];
+  impactAssessment: string;
+  customerCommunication: string;
+  actionItems: string[];
+  lessonsLearned: string;
+  whoGetsBlamed: string;
+  slackChannelName: string;
+  numberOfPagesGenerated: number;
+  postmortemMeetingDuration: string;
+}
+
+// NEW: On-Call Forecast
+export interface OnCallForecast {
+  painIndex: number;
+  overallVerdict: string;
+  predictedPages: number;
+  sleepInterruptions: number;
+  weekendRuined: number;
+  timeline: OnCallEvent[];
+  survivalTips: string[];
+  worstCaseScenario: string;
+  bestCaseScenario: string;
+  coffeeCupsNeeded: number;
+  grayHairsGained: number;
+  relationshipStrainIndex: number;
+  recommendedCopingMechanism: string;
+}
+
+export interface OnCallEvent {
+  day: string;
+  time: string;
+  event: string;
+  severity: string;
+  mood: string;
+  whatYoullBeDoing: string;
+}
+
+// NEW: Code Karma
+export interface CodeKarma {
+  karmaScore: number;
+  karmaVerdict: string;
+  debtCreated: TechDebtCreated;
+  debtInherited: TechDebtInherited;
+  karmaLedger: KarmaEvent[];
+  nextLifePrediction: string;
+  reincarnationAs: string;
+  sixMonthsFromNow: string;
+  oneYearFromNow: string;
+  futureYouMessage: string;
+}
+
+export interface TechDebtCreated {
+  totalHours: number;
+  maintainerCurses: number;
+  debtItems: string[];
+  worstOffense: string;
+}
+
+export interface TechDebtInherited {
+  totalHours: number;
+  originalSinner: string;
+  yearOfSin: string;
+  inheritedProblems: string[];
+}
+
+export interface KarmaEvent {
+  action: string;
+  karmaPoints: number;
+  consequence: string;
+}
+
+// NEW: Mock Scenario
+export interface MockScenario {
+  id: string;
+  name: string;
+  icon: string;
+  category: string;
+  difficulty: string;
+  description: string;
+  language: string;
+  code: string;
+  hints: string[];
+  realWorldExample: string;
+  challenge: string;
+}
+
+// NEW: Famous Bug
+export interface FamousBug {
+  id: string;
+  name: string;
+  company: string;
+  year: string;
+  icon: string;
+  description: string;
+  whatHappened: string;
+  rootCause: string;
+  financialImpact: string;
+  codePattern: string;
+  lesson: string;
+  tags: string[];
+  sampleCode: string;
+}
+
 export interface EnhancedAnalysisResponse {
   id: string;
   score: number;
@@ -78,4 +206,9 @@ export interface EnhancedAnalysisResponse {
   costAnalysis: CostAnalysis;
   achievements: Achievement[];
   roast?: CodeRoast;
+  // NEW fields
+  famousBugMatches?: FamousBugMatch[];
+  preMortem?: PreMortem;
+  onCallForecast?: OnCallForecast;
+  codeKarma?: CodeKarma;
 }

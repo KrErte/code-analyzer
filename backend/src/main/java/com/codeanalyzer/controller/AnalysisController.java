@@ -115,4 +115,32 @@ public class AnalysisController {
     public ResponseEntity<List<Achievement>> getAchievements() {
         return ResponseEntity.ok(Achievement.getAvailableAchievements());
     }
+
+    @GetMapping("/mock-scenarios")
+    public ResponseEntity<List<MockScenario>> getMockScenarios() {
+        return ResponseEntity.ok(MockScenario.getAll());
+    }
+
+    @GetMapping("/mock-scenarios/{id}")
+    public ResponseEntity<MockScenario> getMockScenario(@PathVariable String id) {
+        return MockScenario.getAll().stream()
+                .filter(s -> s.getId().equals(id))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/famous-bugs")
+    public ResponseEntity<List<FamousBug>> getFamousBugs() {
+        return ResponseEntity.ok(FamousBug.getAll());
+    }
+
+    @GetMapping("/famous-bugs/{id}")
+    public ResponseEntity<FamousBug> getFamousBug(@PathVariable String id) {
+        return FamousBug.getAll().stream()
+                .filter(b -> b.getId().equals(id))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

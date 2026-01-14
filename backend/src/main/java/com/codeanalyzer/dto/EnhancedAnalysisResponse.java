@@ -36,6 +36,36 @@ public class EnhancedAnalysisResponse {
     // NEW: Roast (if roast mode)
     private CodeRoast roast;
 
+    // NEW: Famous Bug Pattern Matching
+    private List<FamousBugMatch> famousBugMatches;
+
+    // NEW: Pre-Mortem (postmortem before the incident)
+    private PreMortem preMortem;
+
+    // NEW: On-Call Forecast
+    private OnCallForecast onCallForecast;
+
+    // NEW: Code Karma
+    private CodeKarma codeKarma;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FamousBugMatch {
+        private String famousBugId;
+        private String bugName;
+        private String company;
+        private String year;
+        private String icon;
+        private int similarityPercent;
+        private String matchReason;
+        private String financialImpact;
+        private String yourCodePattern; // Snippet from their code
+        private String historyPattern; // What it's similar to
+        private String lesson;
+    }
+
     @Data
     @Builder
     @NoArgsConstructor

@@ -8,16 +8,17 @@ import { HistoryPanelComponent } from './components/history-panel/history-panel.
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { MultiFileResultsComponent } from './components/multi-file-results/multi-file-results.component';
 import { EnhancedResultsComponent } from './components/enhanced-results/enhanced-results.component';
+import { DemoPlaygroundComponent } from './components/demo-playground/demo-playground.component';
 import { AnalysisService } from './services/analysis.service';
 import { AnalysisResponse, AnalysisHistory, Persona, Language, FileContent, MultiFileAnalysisResponse } from './models/analysis.model';
 import { EnhancedAnalysisResponse } from './models/enhanced.model';
 
-type AnalysisMode = 'single' | 'multi';
+type AnalysisMode = 'single' | 'multi' | 'demo';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, CodeInputComponent, PersonaSelectorComponent, AnalysisResultsComponent, HistoryPanelComponent, FileUploadComponent, MultiFileResultsComponent, EnhancedResultsComponent],
+  imports: [CommonModule, FormsModule, CodeInputComponent, PersonaSelectorComponent, AnalysisResultsComponent, HistoryPanelComponent, FileUploadComponent, MultiFileResultsComponent, EnhancedResultsComponent, DemoPlaygroundComponent],
   template: `
     <div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800">
       <!-- Header -->
@@ -40,6 +41,9 @@ type AnalysisMode = 'single' | 'multi';
                 </button>
                 <button (click)="switchMode('multi')" [class]="mode === 'multi' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' : 'text-gray-400 hover:text-white'" class="px-4 py-2 rounded-md text-sm font-medium transition-all">
                   📁 Multi-File
+                </button>
+                <button (click)="switchMode('demo')" [class]="mode === 'demo' ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white' : 'text-gray-400 hover:text-white'" class="px-4 py-2 rounded-md text-sm font-medium transition-all">
+                  🎮 Playground
                 </button>
               </div>
               <div class="text-xs text-gray-600">Powered by Claude AI</div>
@@ -132,12 +136,17 @@ type AnalysisMode = 'single' | 'multi';
             }
           </div>
         }
+
+        <!-- Demo Playground Mode -->
+        @if (mode === 'demo') {
+          <app-demo-playground (onSelectCode)="loadDemoCode($event)"/>
+        }
       </main>
 
       <footer class="border-t border-gray-800 mt-12">
         <div class="max-w-7xl mx-auto px-4 py-6">
           <div class="flex items-center justify-between text-xs text-gray-600">
-            <p>🔮 Production Incident Predictor • 💰 Cost Analyzer • 🏆 Achievements • 🔥 Roast Mode</p>
+            <p>🔮 Incident Predictor • 💀 Famous Bug Matcher • 📋 Pre-Mortem • 📟 On-Call Forecast • ☯️ Code Karma • 🎮 Bug Playground</p>
             <p>Built with Spring Boot + Angular + Claude AI</p>
           </div>
         </div>
@@ -254,6 +263,13 @@ export class AppComponent implements OnInit {
 
   resetEnhancedAnalysis(): void { this.enhancedResult = null; }
   resetMultiAnalysis(): void { this.multiFileResult = null; this.files = []; }
+
+  loadDemoCode(event: { code: string; language: string }): void {
+    this.code = event.code;
+    this.selectedLanguage = event.language;
+    this.mode = 'single';
+    this.enhancedResult = null;
+  }
 
   clearHistory(): void {
     if (confirm('Clear all history?')) this.analysisService.clearHistory();
