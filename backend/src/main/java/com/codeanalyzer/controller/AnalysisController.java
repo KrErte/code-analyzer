@@ -4,6 +4,7 @@ import com.codeanalyzer.dto.*;
 import com.codeanalyzer.service.ClaudeService;
 import com.codeanalyzer.service.EnhancedAnalysisService;
 import com.codeanalyzer.service.MultiFileAnalysisService;
+import com.codeanalyzer.service.UltraAnalysisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class AnalysisController {
     private final ClaudeService claudeService;
     private final MultiFileAnalysisService multiFileAnalysisService;
     private final EnhancedAnalysisService enhancedAnalysisService;
+    private final UltraAnalysisService ultraAnalysisService;
 
     // Simple in-memory store for shared analyses (in production: use Redis/DB)
     private final Map<String, EnhancedAnalysisResponse> analysisStore = new ConcurrentHashMap<>();
@@ -46,6 +48,22 @@ public class AnalysisController {
         log.info("Enhanced analysis for {} code with {} persona", request.getLanguage(), request.getPersona());
 
         return enhancedAnalysisService.analyzeEnhanced(
+                        request.getCode(),
+                        request.getLanguage(),
+                        request.getContext(),
+                        request.getPersona())
+                .map(ResponseEntity::ok);
+    }
+
+    /**
+     * ULTRA MODE - Full viral analysis with Weather, Insurance, Simulation, DNA
+     * The premium experience for maximum shareability
+     */
+    @PostMapping("/analyze/ultra")
+    public Mono<ResponseEntity<UltraAnalysisResponse>> analyzeUltra(@Valid @RequestBody AnalysisRequest request) {
+        log.info("ULTRA analysis for {} code - full viral mode activated", request.getLanguage());
+
+        return ultraAnalysisService.analyzeUltra(
                         request.getCode(),
                         request.getLanguage(),
                         request.getContext(),
