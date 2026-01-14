@@ -15,13 +15,16 @@ COPY . .
 # Build the application
 RUN npm run build -- --configuration=production
 
+# Debug: show what was built
+RUN ls -la /app/dist/ && ls -la /app/dist/code-analyzer-frontend/ || true
+
 # Runtime stage with nginx
 FROM nginx:alpine
 
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built application
+# Copy built application - try browser subfolder first, fallback to main folder
 COPY --from=build /app/dist/code-analyzer-frontend/browser /usr/share/nginx/html
 
 # Add non-root user
