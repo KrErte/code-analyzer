@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: code-analyzer
+  mvc:
+    async:
+      request-timeout: 180000
+  webflux:
+    base-path: /
 
 anthropic:
   api:
