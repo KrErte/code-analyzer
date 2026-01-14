@@ -9,81 +9,47 @@ import { MockScenario, FamousBug } from '../../models/enhanced.model';
   imports: [CommonModule],
   template: `
     <div class="space-y-6">
-      <!-- Header -->
       <div class="bg-gradient-to-r from-purple-900/40 to-pink-900/40 rounded-xl p-6 border border-purple-500/30">
         <div class="flex items-center gap-4">
           <div class="text-4xl">🎮</div>
           <div>
-            <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              Bug Hunting Playground
-            </h2>
-            <p class="text-gray-400">Learn from history's most expensive bugs. Try mock scenarios. Master the art of bug detection.</p>
+            <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Bug Hunting Playground</h2>
+            <p class="text-gray-400">Learn from history's most expensive bugs. Try mock scenarios. Master bug detection.</p>
           </div>
         </div>
       </div>
 
-      <!-- Tab Switcher -->
       <div class="flex gap-2">
-        <button (click)="activeTab = 'scenarios'"
-                [class]="activeTab === 'scenarios' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'"
-                class="px-4 py-2 rounded-lg font-medium transition-all">
-          🎯 Mock Scenarios
-        </button>
-        <button (click)="activeTab = 'famous'"
-                [class]="activeTab === 'famous' ? 'bg-pink-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'"
-                class="px-4 py-2 rounded-lg font-medium transition-all">
-          💀 Famous Bugs Hall of Fame
-        </button>
-        <button (click)="activeTab = 'random'"
-                [class]="activeTab === 'random' ? 'bg-orange-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'"
-                class="px-4 py-2 rounded-lg font-medium transition-all">
-          🎲 Random Challenge
-        </button>
+        <button (click)="activeTab = 'scenarios'" [class]="activeTab === 'scenarios' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'" class="px-4 py-2 rounded-lg font-medium transition-all">🎯 Mock Scenarios</button>
+        <button (click)="activeTab = 'famous'" [class]="activeTab === 'famous' ? 'bg-pink-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'" class="px-4 py-2 rounded-lg font-medium transition-all">💀 Famous Bugs</button>
+        <button (click)="activeTab = 'random'" [class]="activeTab === 'random' ? 'bg-orange-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'" class="px-4 py-2 rounded-lg font-medium transition-all">🎲 Random Challenge</button>
       </div>
 
-      <!-- Mock Scenarios Tab -->
       @if (activeTab === 'scenarios') {
         <div class="space-y-4">
-          <!-- Category Filter -->
           <div class="flex flex-wrap gap-2">
-            <button (click)="categoryFilter = ''"
-                    [class]="categoryFilter === '' ? 'bg-gray-600' : 'bg-gray-800'"
-                    class="px-3 py-1 rounded-full text-sm text-gray-300 hover:bg-gray-700">
-              All
-            </button>
-            @for (cat of categories; track cat) {
-              <button (click)="categoryFilter = cat.id"
-                      [class]="categoryFilter === cat.id ? cat.color : 'bg-gray-800'"
-                      class="px-3 py-1 rounded-full text-sm text-gray-300 hover:bg-gray-700">
-                {{ cat.icon }} {{ cat.name }}
-              </button>
+            <button (click)="categoryFilter = ''" [class]="categoryFilter === '' ? 'bg-gray-600' : 'bg-gray-800'" class="px-3 py-1 rounded-full text-sm text-gray-300 hover:bg-gray-700">All</button>
+            @for (cat of categories; track cat.id) {
+              <button (click)="categoryFilter = cat.id" [class]="categoryFilter === cat.id ? cat.color : 'bg-gray-800'" class="px-3 py-1 rounded-full text-sm text-gray-300 hover:bg-gray-700">{{ cat.icon }} {{ cat.name }}</button>
             }
           </div>
-
-          <!-- Scenarios Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @for (scenario of filteredScenarios; track scenario.id) {
-              <div class="bg-gray-800/50 rounded-xl border border-gray-700 p-4 hover:border-purple-500/50 transition-all cursor-pointer group"
-                   (click)="selectScenario(scenario)">
+              <div class="bg-gray-800/50 rounded-xl border border-gray-700 p-4 hover:border-purple-500/50 transition-all cursor-pointer group" (click)="selectScenario(scenario)">
                 <div class="flex items-start justify-between">
                   <div class="flex items-center gap-3">
                     <span class="text-2xl">{{ scenario.icon }}</span>
                     <div>
                       <h3 class="font-bold text-white group-hover:text-purple-300 transition-colors">{{ scenario.name }}</h3>
-                      <p class="text-xs text-gray-500">{{ scenario.category }} • {{ scenario.difficulty }}</p>
+                      <p class="text-xs text-gray-500">{{ scenario.category }} - {{ scenario.difficulty }}</p>
                     </div>
                   </div>
-                  <span class="text-xs px-2 py-1 rounded-full"
-                        [class]="getDifficultyClass(scenario.difficulty)">
-                    {{ scenario.difficulty }}
-                  </span>
+                  <span class="text-xs px-2 py-1 rounded-full" [class]="getDifficultyClass(scenario.difficulty)">{{ scenario.difficulty }}</span>
                 </div>
                 <p class="text-sm text-gray-400 mt-2">{{ scenario.description }}</p>
                 <div class="flex items-center justify-between mt-3">
                   <span class="text-xs text-gray-600">{{ scenario.language }}</span>
-                  <button class="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1">
-                    Try Challenge <span>→</span>
-                  </button>
+                  <span class="text-xs text-purple-400">Try Challenge →</span>
                 </div>
               </div>
             }
@@ -91,20 +57,17 @@ import { MockScenario, FamousBug } from '../../models/enhanced.model';
         </div>
       }
 
-      <!-- Famous Bugs Tab -->
       @if (activeTab === 'famous') {
         <div class="space-y-4">
           @for (bug of famousBugs; track bug.id) {
-            <div class="bg-gray-800/50 rounded-xl border border-gray-700 overflow-hidden hover:border-pink-500/50 transition-all"
-                 [class.border-pink-500/30]="expandedBug === bug.id">
-              <!-- Header -->
+            <div class="bg-gray-800/50 rounded-xl border border-gray-700 overflow-hidden hover:border-pink-500/50 transition-all" [class.border-pink-500]="expandedBug === bug.id">
               <div class="p-4 cursor-pointer" (click)="toggleBug(bug.id)">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-4">
                     <span class="text-3xl">{{ bug.icon }}</span>
                     <div>
                       <h3 class="font-bold text-white text-lg">{{ bug.name }}</h3>
-                      <p class="text-sm text-gray-400">{{ bug.company }} • {{ bug.year }}</p>
+                      <p class="text-sm text-gray-400">{{ bug.company }} - {{ bug.year }}</p>
                     </div>
                   </div>
                   <div class="text-right">
@@ -114,8 +77,6 @@ import { MockScenario, FamousBug } from '../../models/enhanced.model';
                 </div>
                 <p class="text-gray-400 mt-2">{{ bug.description }}</p>
               </div>
-
-              <!-- Expanded Content -->
               @if (expandedBug === bug.id) {
                 <div class="border-t border-gray-700 p-4 space-y-4 bg-gray-900/50">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -128,24 +89,18 @@ import { MockScenario, FamousBug } from '../../models/enhanced.model';
                       <p class="text-sm text-gray-300">{{ bug.rootCause }}</p>
                     </div>
                   </div>
-
                   <div class="bg-gray-800 rounded-lg p-4">
-                    <h4 class="text-sm font-medium text-yellow-400 mb-2">The Code Pattern That Caused It</h4>
+                    <h4 class="text-sm font-medium text-yellow-400 mb-2">The Code Pattern</h4>
                     <pre class="text-xs text-gray-300 overflow-x-auto whitespace-pre-wrap">{{ bug.sampleCode }}</pre>
                   </div>
-
                   <div class="flex items-center justify-between">
                     <div class="flex flex-wrap gap-2">
                       @for (tag of bug.tags; track tag) {
                         <span class="text-xs px-2 py-1 bg-gray-700 rounded-full text-gray-400">#{{ tag }}</span>
                       }
                     </div>
-                    <button (click)="loadFamousBugCode(bug)"
-                            class="bg-pink-600 hover:bg-pink-500 px-4 py-2 rounded-lg text-sm font-medium transition-all">
-                      🔬 Analyze This Pattern
-                    </button>
+                    <button (click)="loadFamousBugCode(bug); $event.stopPropagation()" class="bg-pink-600 hover:bg-pink-500 px-4 py-2 rounded-lg text-sm font-medium transition-all">🔬 Analyze This Pattern</button>
                   </div>
-
                   <div class="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-lg p-4 border border-yellow-500/20">
                     <p class="text-sm text-yellow-300"><strong>Lesson:</strong> {{ bug.lesson }}</p>
                   </div>
@@ -156,7 +111,6 @@ import { MockScenario, FamousBug } from '../../models/enhanced.model';
         </div>
       }
 
-      <!-- Random Challenge Tab -->
       @if (activeTab === 'random') {
         <div class="text-center py-12">
           @if (!randomChallenge) {
@@ -164,10 +118,7 @@ import { MockScenario, FamousBug } from '../../models/enhanced.model';
               <div class="text-6xl animate-bounce">🎲</div>
               <h3 class="text-2xl font-bold text-white">Ready for a Random Challenge?</h3>
               <p class="text-gray-400">Get a random buggy code scenario and test your bug-hunting skills!</p>
-              <button (click)="generateRandomChallenge()"
-                      class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105">
-                🎰 Generate Random Challenge
-              </button>
+              <button (click)="generateRandomChallenge()" class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105">🎰 Generate Random Challenge</button>
             </div>
           } @else {
             <div class="text-left space-y-4">
@@ -179,32 +130,19 @@ import { MockScenario, FamousBug } from '../../models/enhanced.model';
                     <p class="text-sm text-gray-400">{{ randomChallenge.difficulty }} Challenge</p>
                   </div>
                 </div>
-                <button (click)="randomChallenge = null"
-                        class="text-gray-400 hover:text-white">
-                  🔄 New Challenge
-                </button>
+                <button (click)="randomChallenge = null" class="text-gray-400 hover:text-white">🔄 New Challenge</button>
               </div>
-
               <div class="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4">
                 <p class="text-yellow-300 font-medium">🎯 Your Challenge:</p>
                 <p class="text-gray-300 mt-1">{{ randomChallenge.challenge }}</p>
               </div>
-
               <div class="bg-gray-800 rounded-lg p-4">
                 <pre class="text-sm text-gray-300 overflow-x-auto whitespace-pre-wrap">{{ randomChallenge.code }}</pre>
               </div>
-
               <div class="flex items-center justify-between">
-                <button (click)="showHints = !showHints"
-                        class="text-purple-400 hover:text-purple-300 text-sm">
-                  {{ showHints ? '🙈 Hide Hints' : '💡 Show Hints' }}
-                </button>
-                <button (click)="selectScenario(randomChallenge)"
-                        class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-lg font-medium">
-                  🔍 Analyze with AI
-                </button>
+                <button (click)="showHints = !showHints" class="text-purple-400 hover:text-purple-300 text-sm">{{ showHints ? '🙈 Hide Hints' : '💡 Show Hints' }}</button>
+                <button (click)="selectScenario(randomChallenge)" class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-lg font-medium">🔍 Analyze with AI</button>
               </div>
-
               @if (showHints) {
                 <div class="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
                   <p class="text-purple-300 font-medium mb-2">💡 Hints:</p>
@@ -215,7 +153,6 @@ import { MockScenario, FamousBug } from '../../models/enhanced.model';
                   </ul>
                 </div>
               }
-
               <div class="bg-gray-800/50 rounded-lg p-4">
                 <p class="text-sm text-gray-400"><strong>Real World Example:</strong> {{ randomChallenge.realWorldExample }}</p>
               </div>
