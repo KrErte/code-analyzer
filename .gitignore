@@ -1,0 +1,48 @@
+# Backend - Gradle
+backend/build/
+backend/.gradle/
+backend/*.jar
+backend/*.war
+backend/*.ear
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.sass-cache/
+frontend/connect.lock
+frontend/coverage/
+frontend/libpeerconnection.log
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# Build
+build/
+out/
+
+# Test
+*.test-results/
+
+# Temp
+tmp/
+temp/
